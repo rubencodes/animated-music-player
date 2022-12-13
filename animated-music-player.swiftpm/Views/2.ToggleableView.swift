@@ -44,7 +44,7 @@ struct ToggleableView: View {
     private func TrackInfo() -> some View {
         if let track = viewModel.track,
            let location = viewModel.location {
-            VStack(spacing: isExpanded ? 30 : 8) {
+            VStack(alignment: .leading, spacing: isExpanded ? 30 : 8) {
                 if isExpanded {
                     TitleExpanded(track: track)
 
@@ -72,23 +72,19 @@ struct ToggleableView: View {
 
     @ViewBuilder
     private func TitleExpanded(track: Track) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(track.name)
-                    .foregroundColor(.primary)
-                    .font(.title3)
-                    .bold()
-                    .lineLimit(1)
-                    .fixedSize()
+        VStack(alignment: .leading) {
+            Text(track.name)
+                .foregroundColor(.primary)
+                .font(.title3)
+                .bold()
+                .lineLimit(1)
+                .fixedSize()
 
-                Text(track.artist)
-                    .foregroundColor(.primary.opacity(0.8))
-                    .font(.title3)
-                    .lineLimit(1)
-                    .fixedSize()
-            }
-
-            Spacer(minLength: 0)
+            Text(track.artist)
+                .foregroundColor(.primary.opacity(0.8))
+                .font(.title3)
+                .lineLimit(1)
+                .fixedSize()
         }
     }
 
