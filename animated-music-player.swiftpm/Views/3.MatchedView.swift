@@ -66,7 +66,8 @@ struct MatchedView: View {
                 if isExpanded {
                     TitleVertical(track: track)
 
-                    ProgressView(track: track, location: location)
+                    ProgressView(location: location,
+                                 length: track.length)
 
                     HStack(spacing: 50) {
                         Spacer(minLength: 0)
@@ -81,7 +82,8 @@ struct MatchedView: View {
                     HStack(spacing: 8) {
                         PlaybackControls()
 
-                        ProgressView(track: track, location: location)
+                        ProgressView(location: location,
+                                     length: track.length)
                     }
                 }
             }
@@ -135,8 +137,8 @@ struct MatchedView: View {
     }
 
     @ViewBuilder
-    private func ProgressView(track: Track,
-                              location: CGFloat) -> some View {
+    private func ProgressView(location: CGFloat,
+                              length: CGFloat) -> some View {
         VStack {
             HStack {
                 if isExpanded == false {
@@ -149,13 +151,13 @@ struct MatchedView: View {
                 }
 
                 Scrubber(location: location,
-                         length: track.length,
+                         length: length,
                          color: .primary)
                 .matchedGeometryEffect(id: ViewID.scrubber.rawValue,
                                        in: contentView)
 
                 if isExpanded == false {
-                    Text("-\((track.length - location).formatAsTimestamp())")
+                    Text("-\((length - location).formatAsTimestamp())")
                         .monospacedDigit()
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -175,7 +177,7 @@ struct MatchedView: View {
 
                     Spacer(minLength: 0)
 
-                    Text("-\((track.length - location).formatAsTimestamp())")
+                    Text("-\((length - location).formatAsTimestamp())")
                         .monospacedDigit()
                         .font(.caption)
                         .foregroundColor(.secondary)

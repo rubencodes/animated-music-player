@@ -37,7 +37,8 @@ struct BasicView: View {
                 HStack(spacing: 8) {
                     PlaybackControls()
 
-                    ProgressView(track: track, location: location)
+                    ProgressView(location: location,
+                                 length: track.length)
                 }
             }
         }
@@ -64,8 +65,8 @@ struct BasicView: View {
     }
 
     @ViewBuilder
-    private func ProgressView(track: Track,
-                              location: CGFloat) -> some View {
+    private func ProgressView(location: CGFloat,
+                              length: CGFloat) -> some View {
         HStack {
             Text(location.formatAsTimestamp())
                 .monospacedDigit()
@@ -73,10 +74,10 @@ struct BasicView: View {
                 .foregroundColor(.secondary)
 
             Scrubber(location: location,
-                     length: track.length,
+                     length: length,
                      color: .primary)
 
-            Text("-\((track.length - location).formatAsTimestamp())")
+            Text("-\((length - location).formatAsTimestamp())")
                 .monospacedDigit()
                 .font(.caption)
                 .foregroundColor(.secondary)
