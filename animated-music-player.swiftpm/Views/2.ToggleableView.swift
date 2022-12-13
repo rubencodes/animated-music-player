@@ -163,8 +163,8 @@ struct ToggleableView: View {
             Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
                  size: isExpanded ? 40 : 10)
             .foregroundColor(.primary)
+            .frame(width: isExpanded ? 44 : 12)
         }
-        .frame(width: isExpanded ? 44 : 12)
 
         Button { viewModel.nextTrack() } label: {
             Icon(named: "forward.fill", size: isExpanded ? 24 : 10)

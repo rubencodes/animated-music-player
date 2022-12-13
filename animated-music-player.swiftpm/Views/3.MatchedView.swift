@@ -201,8 +201,8 @@ struct MatchedView: View {
             Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
                  size: isExpanded ? 40 : 10)
             .foregroundColor(.primary)
+            .frame(width: isExpanded ? 44 : 12)
         }
-        .frame(width: isExpanded ? 44 : 12)
         .matchedGeometryEffect(id: ViewID.playPauseToggle.rawValue,
                                in: contentView)
 
