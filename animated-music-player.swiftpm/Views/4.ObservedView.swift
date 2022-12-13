@@ -198,14 +198,14 @@ struct ObservedView: View {
         } label: {
             Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
                 .foregroundColor(.primary)
-                .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
-                                       in: contentView)
         }
         .scaleEffect((1.5 - abs(prevAnimationState - 0.5)))
         .animationObserver(for: isAnimatingPrev ? 1 : 0,
                            currentState: $prevAnimationState) { _ in
             isAnimatingPrev = false
         }
+        .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
+                               in: contentView)
 
         Button { viewModel.isPlaying.toggle() } label: {
             Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
@@ -222,14 +222,13 @@ struct ObservedView: View {
         } label: {
             Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
                 .foregroundColor(.primary)
-                .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
-                                       in: contentView)
         }
         .scaleEffect((1.5 - abs(nextAnimationState - 0.5)))
         .animationObserver(for: isAnimatingNext ? 1 : 0,
                            currentState: $nextAnimationState) { _ in
             isAnimatingNext = false
         }
-
+        .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
+                               in: contentView)
     }
 }

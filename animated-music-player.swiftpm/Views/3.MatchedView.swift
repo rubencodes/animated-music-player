@@ -191,9 +191,9 @@ struct MatchedView: View {
         Button { viewModel.prevTrack() } label: {
             Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
                 .foregroundColor(.primary)
-                .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
-                                       in: contentView)
         }
+        .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
+                               in: contentView)
 
         Button { viewModel.isPlaying.toggle() } label: {
             Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
@@ -207,8 +207,8 @@ struct MatchedView: View {
         Button { viewModel.nextTrack() } label: {
             Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
                 .foregroundColor(.primary)
-                .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
-                                       in: contentView)
         }
+        .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
+                               in: contentView)
     }
 }
