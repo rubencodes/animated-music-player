@@ -9,38 +9,72 @@ import SwiftUI
 import Combine
 
 class PlayerViewModel: ObservableObject {
+
+    // MARK: - Internal Properties
+
     @Published var track: Track?
     @Published var location: CGFloat?
     @Published var isPlaying: Bool
 
+    // MARK: - Private Properties
+
     private let tracks: [Track]
+    private var trackIndex: Int? {
+        tracks.firstIndex(where: { $0 == track })
+    }
     private var timer: AnyCancellable?
     private var time: Date = .now {
         didSet {
-            incrementLocation()
+            self.incrementLocation()
         }
     }
+
+    // MARK: - Lifecycle
 
     init(tracks: [Track]) {
         self.tracks = tracks
         guard let track = tracks.first else {
-            self.isPlaying = false
+            isPlaying = false
             return
         }
 
         self.track = track
-        self.isPlaying = true
-        self.location = .zero
-        self.timer = Timer.publish(every: 1, on: .main, in: .common)
+        isPlaying = true
+        location = .zero
+        timer = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .receive(on: DispatchQueue.main)
             .assign(to: \.time, on: self)
     }
 
+    // MARK: - Internal Properties
+
+    func prevTrack() {
+        guard let trackIndex = trackIndex else {
+            return
+        }
+
+        let prevIndex = (trackIndex - 1) < 0 ? tracks.count - 1 : trackIndex - 1
+        track = tracks[prevIndex]
+        location = .zero
+    }
+
+    func nextTrack() {
+        guard let trackIndex = trackIndex else {
+            return
+        }
+
+        let nextIndex = (trackIndex + 1) < tracks.count ? trackIndex + 1 : 0
+        track = tracks[nextIndex]
+        location = .zero
+    }
+
+    // MARK: - Private Functions
+
     private func incrementLocation() {
         guard let track = track,
               let location = location,
-              let trackIndex = tracks.firstIndex(where: { $0 == track }),
+              let trackIndex = trackIndex,
               isPlaying else { return }
 
         let nextLocation = (location + 1)

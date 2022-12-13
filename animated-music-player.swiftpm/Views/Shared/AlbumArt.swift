@@ -8,10 +8,15 @@
 import SwiftUI
 
 struct AlbumArt: View {
-    let name: String
+
+    // MARK: - Internal Properties
+
+    let track: Track?
+
+    // MARK: - Body
 
     var body: some View {
-        Image(name)
+        Image(track?.artwork ?? "unknown")
             .resizable()
             .aspectRatio(1, contentMode: .fit)
             .cornerRadius(12)

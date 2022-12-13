@@ -8,10 +8,15 @@
 import SwiftUI
 
 struct BlurredBackground: View {
-    let named: String
+
+    // MARK: - Internal Properties
+
+    let named: String?
+
+    // MARK: - Body
 
     var body: some View {
-        Image(named)
+        Image(named ?? "unknownBackground")
             .resizable()
             .scaledToFill()
             .ignoresSafeArea()

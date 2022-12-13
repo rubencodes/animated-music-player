@@ -8,8 +8,13 @@
 import SwiftUI
 
 struct Icon: View {
+
+    // MARK: - Internal Properties
+
     let named: String
     let size: CGFloat
+
+    // MARK: - Body
 
     var body: some View {
         Image(systemName: named)

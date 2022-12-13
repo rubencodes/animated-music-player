@@ -8,18 +8,22 @@
 import SwiftUI
 
 struct ToggleableView: View {
-    let track: Track
-    let location: CGFloat
-    @Binding var isPlaying: Bool
+
+    // MARK: - Internal Properties
+
+    @StateObject var viewModel: PlayerViewModel
+
+    // MARK: - Private Properties
 
     @State private var isExpanded: Bool = false
-    @State private var animationState: CGFloat = .zero
+
+    // MARK: - Body
 
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
-            AlbumArt(name: track.artwork)
+            AlbumArt(track: viewModel.track)
 
             if isExpanded {
                 Spacer(minLength: 0)
@@ -28,40 +32,46 @@ struct ToggleableView: View {
             Controls()
         }
         .onTapGesture {
-            withAnimation {
+            withAnimation(.spring()) {
                 isExpanded.toggle()
             }
         }
     }
 
+    // MARK: - View Builders
+
+    @ViewBuilder
     private func Controls() -> some View {
-        VStack(spacing: isExpanded ? 30 : 8) {
-            if isExpanded {
-                TitleExpanded()
+        if let track = viewModel.track,
+           let location = viewModel.location {
+            VStack(spacing: isExpanded ? 30 : 8) {
+                if isExpanded {
+                    TitleExpanded(track: track)
 
-                TrackProgress()
+                    TrackProgress(track: track, location: location)
 
-                HStack(spacing: 50) {
-                    Spacer(minLength: 0)
+                    HStack(spacing: 50) {
+                        Spacer(minLength: 0)
 
-                    PlaybackControls()
+                        PlaybackControls()
 
-                    Spacer(minLength: 0)
-                }
-            } else {
-                Title()
+                        Spacer(minLength: 0)
+                    }
+                } else {
+                    Title(track: track)
 
-                HStack(spacing: 8) {
-                    PlaybackControls()
+                    HStack(spacing: 8) {
+                        PlaybackControls()
 
-                    TrackProgress()
+                        TrackProgress(track: track, location: location)
+                    }
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func TitleExpanded() -> some View {
+    private func TitleExpanded(track: Track) -> some View {
         HStack {
             VStack(alignment: .leading) {
                 Text(track.name)
@@ -83,8 +93,8 @@ struct ToggleableView: View {
     }
 
     @ViewBuilder
-    private func Title() -> some View {
-        HStack {
+    private func Title(track: Track) -> some View {
+        HStack(spacing: 4) {
             Spacer(minLength: 0)
 
             Text(track.artist)
@@ -103,7 +113,8 @@ struct ToggleableView: View {
     }
 
     @ViewBuilder
-    private func TrackProgress() -> some View {
+    private func TrackProgress(track: Track,
+                               location: CGFloat) -> some View {
         VStack {
             HStack {
                 if isExpanded == false {
@@ -145,19 +156,21 @@ struct ToggleableView: View {
 
     @ViewBuilder
     private func PlaybackControls() -> some View {
-        Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
-            .foregroundColor(.primary)
-
-        Button(action: { isPlaying.toggle() }) {
-            Icon(named: isPlaying ? "pause.fill" : "play.fill",
-                 size: isExpanded ? 40 : 10)
+        Button { viewModel.prevTrack() } label: {
+            Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
+                .foregroundColor(.primary)
         }
-        .scaleEffect(0.5 + (1 - abs(animationState - 0.5)))
-        .animationObserver(for: isPlaying ? 1 : 0, currentState: $animationState)
-        .frame(width: isExpanded ? 44 : 12)
-        .foregroundColor(.primary)
 
-        Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
+        Button { viewModel.isPlaying.toggle() } label: {
+            Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
+                 size: isExpanded ? 40 : 10)
             .foregroundColor(.primary)
+        }
+        .frame(width: isExpanded ? 44 : 12)
+
+        Button { viewModel.nextTrack() } label: {
+            Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
+                .foregroundColor(.primary)
+        }
     }
 }

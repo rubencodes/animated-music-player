@@ -8,38 +8,46 @@
 import SwiftUI
 
 struct BasicView: View {
-    let track: Track
-    let location: CGFloat
-    @Binding var isPlaying: Bool
+
+    // MARK: - Internal Properties
+
+    @StateObject var viewModel: PlayerViewModel
+
+    // MARK: - Body
     
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
-            AlbumArt(name: track.artwork)
+            AlbumArt(track: viewModel.track)
             
             Controls()
         }
     }
 
+    // MARK: - View Builders
+
     @ViewBuilder
     private func Controls() -> some View {
-        VStack(spacing: 8) {
-            Title()
+        if let track = viewModel.track,
+           let location = viewModel.location {
+            VStack(spacing: 8) {
+                Title(track: track)
 
-            HStack(spacing: 8) {
-                PlaybackControls()
+                HStack(spacing: 8) {
+                    PlaybackControls()
 
-                TrackProgress()
+                    TrackProgress(track: track, location: location)
+                }
             }
         }
     }
 
     @ViewBuilder
-    private func Title() -> some View {
-        HStack {
+    private func Title(track: Track) -> some View {
+        HStack(spacing: 4) {
             Spacer(minLength: 0)
-            
+
             Text(track.artist)
                 .foregroundColor(.secondary)
                 .font(.caption)
@@ -56,7 +64,8 @@ struct BasicView: View {
     }
 
     @ViewBuilder
-    private func TrackProgress() -> some View {
+    private func TrackProgress(track: Track,
+                               location: CGFloat) -> some View {
         HStack {
             Text(location.formatAsTimestamp())
                 .monospacedDigit()
@@ -66,7 +75,7 @@ struct BasicView: View {
             Scrubber(location: location,
                      length: track.length,
                      color: .primary)
-            
+
             Text("-\((track.length - location).formatAsTimestamp())")
                 .monospacedDigit()
                 .font(.caption)
@@ -76,17 +85,21 @@ struct BasicView: View {
 
     @ViewBuilder
     private func PlaybackControls() -> some View {
-        Icon(named: "backward.fill", size: 10)
-            .foregroundColor(.primary)
+        Button { viewModel.prevTrack() } label: {
+            Icon(named: "backward.fill", size: 10)
+                .foregroundColor(.primary)
+        }
 
-        Button(action: { isPlaying.toggle() }) {
-            Icon(named: isPlaying ? "pause.fill" : "play.fill",
+        Button { viewModel.isPlaying.toggle() } label: {
+            Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
                  size: 10)
+            .foregroundColor(.primary)
         }
         .frame(width: 12)
-        .foregroundColor(.primary)
 
-        Icon(named: "forward.fill", size: 10)
-            .foregroundColor(.primary)
+        Button { viewModel.nextTrack() } label: {
+            Icon(named: "forward.fill", size: 10)
+                .foregroundColor(.primary)
+        }
     }
 }

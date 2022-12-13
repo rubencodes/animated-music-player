@@ -8,6 +8,9 @@
 import Foundation
 
 struct Track: Equatable {
+
+    // MARK: - Internal Properties
+    
     let name: String
     let artist: String
     let length: CGFloat

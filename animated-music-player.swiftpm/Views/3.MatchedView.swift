@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct MatchedView: View {
-    let track: Track
-    let location: CGFloat
-    @Binding var isPlaying: Bool
+
+    // MARK: - Internal Properties
+
+    @StateObject var viewModel: PlayerViewModel
+
+    // MARK: - Private Properties
 
     @State private var isExpanded: Bool = false
     @Namespace private var contentView
@@ -27,11 +30,13 @@ struct MatchedView: View {
         case scrubberRemaining
     }
 
+    // MARK: - Body
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
-            AlbumArt(name: track.artwork)
+            AlbumArt(track: viewModel.track)
                 .shadow(radius: isExpanded ? 10 : 0)
                 .opacity(isExpanded ? 1 : 0.5)
                 .rotation3DEffect(isExpanded ? .degrees(180) : .zero,
@@ -51,35 +56,40 @@ struct MatchedView: View {
         }
     }
 
+    // MARK: - View Builders
+
     @ViewBuilder
     private func Controls() -> some View {
-        VStack(alignment: .leading, spacing: isExpanded ? 30 : 8) {
-            if isExpanded {
-                TitleExpanded()
+        if let track = viewModel.track,
+           let location = viewModel.location {
+            VStack(alignment: .leading, spacing: isExpanded ? 30 : 8) {
+                if isExpanded {
+                    TitleExpanded(track: track)
 
-                TrackProgress()
+                    TrackProgress(track: track, location: location)
 
-                HStack(spacing: 50) {
-                    Spacer(minLength: 0)
+                    HStack(spacing: 50) {
+                        Spacer(minLength: 0)
 
-                    PlaybackControls()
-                    
-                    Spacer(minLength: 0)
-                }
-            } else {
-                Title()
+                        PlaybackControls()
 
-                HStack(spacing: 8) {
-                    PlaybackControls()
+                        Spacer(minLength: 0)
+                    }
+                } else {
+                    Title(track: track)
 
-                    TrackProgress()
+                    HStack(spacing: 8) {
+                        PlaybackControls()
+
+                        TrackProgress(track: track, location: location)
+                    }
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func TitleExpanded() -> some View {
+    private func TitleExpanded(track: Track) -> some View {
         VStack(alignment: .leading) {
             Text(track.name)
                 .foregroundColor(.primary)
@@ -101,8 +111,8 @@ struct MatchedView: View {
     }
 
     @ViewBuilder
-    private func Title() -> some View {
-        HStack {
+    private func Title(track: Track) -> some View {
+        HStack(spacing: 4) {
             Spacer(minLength: 0)
 
             Text(track.artist)
@@ -125,7 +135,8 @@ struct MatchedView: View {
     }
 
     @ViewBuilder
-    private func TrackProgress() -> some View {
+    private func TrackProgress(track: Track,
+                               location: CGFloat) -> some View {
         VStack {
             HStack {
                 if isExpanded == false {
@@ -177,24 +188,27 @@ struct MatchedView: View {
 
     @ViewBuilder
     private func PlaybackControls() -> some View {
-        Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
-            .foregroundColor(.primary)
-            .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
-                                   in: contentView)
+        Button { viewModel.prevTrack() } label: {
+            Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
+                .foregroundColor(.primary)
+                .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
+                                       in: contentView)
+        }
 
-        Button(action: { isPlaying.toggle() }) {
-            Icon(named: isPlaying ? "pause.fill" : "play.fill",
+        Button { viewModel.isPlaying.toggle() } label: {
+            Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
                  size: isExpanded ? 40 : 10)
             .foregroundColor(.primary)
         }
-        .animation(.spring(), value: isPlaying)
         .frame(width: isExpanded ? 44 : 12)
         .matchedGeometryEffect(id: ViewID.playPauseToggle.rawValue,
                                in: contentView)
 
-        Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
-            .foregroundColor(.primary)
-            .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
-                                   in: contentView)
+        Button { viewModel.nextTrack() } label: {
+            Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
+                .foregroundColor(.primary)
+                .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
+                                       in: contentView)
+        }
     }
 }

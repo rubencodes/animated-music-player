@@ -11,50 +11,39 @@ struct MainView: View {
     @StateObject var viewModel: PlayerViewModel
 
     var body: some View {
-        if let track = viewModel.track,
-           let location = viewModel.location {
-            TabView {
-                BasicView(track: track,
-                          location: location,
-                          isPlaying: $viewModel.isPlaying)
+        TabView {
+            BasicView(viewModel: viewModel)
                 .padding(.horizontal, 30)
                 .padding(.vertical, 40)
-                .background(BlurredBackground(named: track.background))
+                .background(BlurredBackground(named: viewModel.track?.background))
                 .tabItem {
                     Label("Basic", systemImage: "1.circle.fill")
                 }
 
-                ToggleableView(track: track,
-                               location: location,
-                               isPlaying: $viewModel.isPlaying)
+            ToggleableView(viewModel: viewModel)
                 .padding(.horizontal, 30)
                 .padding(.vertical, 40)
-                .background(BlurredBackground(named: track.background))
+                .background(BlurredBackground(named: viewModel.track?.background))
                 .tabItem {
                     Label("Expand", systemImage: "2.circle.fill")
                 }
 
-                MatchedView(track: track,
-                            location: location,
-                            isPlaying: $viewModel.isPlaying)
+            MatchedView(viewModel: viewModel)
                 .padding(.horizontal, 30)
                 .padding(.vertical, 40)
-                .background(BlurredBackground(named: track.background))
+                .background(BlurredBackground(named: viewModel.track?.background))
                 .tabItem {
                     Label("Match", systemImage: "3.circle.fill")
                 }
 
-                ObservedView(track: track,
-                             location: location,
-                             isPlaying: $viewModel.isPlaying)
+            ObservedView(viewModel: viewModel)
                 .padding(.horizontal, 30)
                 .padding(.vertical, 40)
-                .background(BlurredBackground(named: track.background))
+                .background(BlurredBackground(named: viewModel.track?.background))
                 .tabItem {
                     Label("Observe", systemImage: "4.circle.fill")
                 }
-            }
-            .tint(.primary)
         }
+        .tint(.primary)
     }
 }

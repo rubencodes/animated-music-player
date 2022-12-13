@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct ObservedView: View {
-    let track: Track
-    let location: CGFloat
-    @Binding var isPlaying: Bool
+
+    // MARK: - Internal Properties
+
+    @StateObject var viewModel: PlayerViewModel
+
+    // MARK: - Private Properties
 
     @State private var isExpanded: Bool = false
-    @State private var animationState: CGFloat = .zero
+    @State private var isAnimatingPrev: Bool = false
+    @State private var prevAnimationState: CGFloat = .zero
+    @State private var isAnimatingNext: Bool = false
+    @State private var nextAnimationState: CGFloat = .zero
     @Namespace private var contentView
     private enum ViewID: String {
         case backwardButton
@@ -28,11 +34,13 @@ struct ObservedView: View {
         case scrubberRemaining
     }
 
+    // MARK: - Body
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer(minLength: 0)
 
-            AlbumArt(name: track.artwork)
+            AlbumArt(track: viewModel.track)
                 .shadow(radius: isExpanded ? 10 : 0)
                 .opacity(isExpanded ? 1 : 0.5)
                 .rotation3DEffect(isExpanded ? .degrees(180) : .zero,
@@ -52,35 +60,40 @@ struct ObservedView: View {
         }
     }
 
+    // MARK: - View Builders
+
     @ViewBuilder
     private func Controls() -> some View {
-        VStack(alignment: .leading, spacing: isExpanded ? 30 : 8) {
-            if isExpanded {
-                TitleExpanded()
+        if let track = viewModel.track,
+           let location = viewModel.location {
+            VStack(alignment: .leading, spacing: isExpanded ? 30 : 8) {
+                if isExpanded {
+                    TitleExpanded(track: track)
 
-                TrackProgress()
+                    TrackProgress(track: track, location: location)
 
-                HStack(spacing: 50) {
-                    Spacer(minLength: 0)
+                    HStack(spacing: 50) {
+                        Spacer(minLength: 0)
 
-                    PlaybackControls()
+                        PlaybackControls()
 
-                    Spacer(minLength: 0)
-                }
-            } else {
-                Title()
+                        Spacer(minLength: 0)
+                    }
+                } else {
+                    Title(track: track)
 
-                HStack(spacing: 8) {
-                    PlaybackControls()
+                    HStack(spacing: 8) {
+                        PlaybackControls()
 
-                    TrackProgress()
+                        TrackProgress(track: track, location: location)
+                    }
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func TitleExpanded() -> some View {
+    private func TitleExpanded(track: Track) -> some View {
         VStack(alignment: .leading) {
             Text(track.name)
                 .foregroundColor(.primary)
@@ -102,8 +115,8 @@ struct ObservedView: View {
     }
 
     @ViewBuilder
-    private func Title() -> some View {
-        HStack {
+    private func Title(track: Track) -> some View {
+        HStack(spacing: 4) {
             Spacer(minLength: 0)
 
             Text(track.artist)
@@ -126,7 +139,8 @@ struct ObservedView: View {
     }
 
     @ViewBuilder
-    private func TrackProgress() -> some View {
+    private func TrackProgress(track: Track,
+                               location: CGFloat) -> some View {
         VStack {
             HStack {
                 if isExpanded == false {
@@ -178,27 +192,44 @@ struct ObservedView: View {
 
     @ViewBuilder
     private func PlaybackControls() -> some View {
-        Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
-            .foregroundColor(.primary)
-            .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
-                                   in: contentView)
+        Button {
+            withAnimation { isAnimatingPrev = true }
+            viewModel.prevTrack()
+        } label: {
+            Icon(named: "backward.fill", size: isExpanded ? 24 : 10)
+                .foregroundColor(.primary)
+                .matchedGeometryEffect(id: ViewID.backwardButton.rawValue,
+                                       in: contentView)
+        }
+        .scaleEffect((1.5 - abs(prevAnimationState - 0.5)))
+        .animationObserver(for: isAnimatingPrev ? 1 : 0,
+                           currentState: $prevAnimationState) { _ in
+            isAnimatingPrev = false
+        }
 
-        Button(action: { isPlaying.toggle() }) {
-            Icon(named: isPlaying ? "pause.fill" : "play.fill",
+        Button { viewModel.isPlaying.toggle() } label: {
+            Icon(named: viewModel.isPlaying ? "pause.fill" : "play.fill",
                  size: isExpanded ? 40 : 10)
             .foregroundColor(.primary)
         }
-        .scaleEffect((1.5 - abs(animationState - 0.5)))
-        .animationObserver(for: isPlaying ? 1 : 0,
-                           currentState: $animationState)
-        .animation(.spring(), value: isPlaying)
         .frame(width: isExpanded ? 44 : 12)
         .matchedGeometryEffect(id: ViewID.playPauseToggle.rawValue,
                                in: contentView)
 
-        Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
-            .foregroundColor(.primary)
-            .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
-                                   in: contentView)
+        Button {
+            withAnimation { isAnimatingNext = true }
+            viewModel.nextTrack()
+        } label: {
+            Icon(named: "forward.fill", size: isExpanded ? 24 : 10)
+                .foregroundColor(.primary)
+                .matchedGeometryEffect(id: ViewID.forwardButton.rawValue,
+                                       in: contentView)
+        }
+        .scaleEffect((1.5 - abs(nextAnimationState - 0.5)))
+        .animationObserver(for: isAnimatingNext ? 1 : 0,
+                           currentState: $nextAnimationState) { _ in
+            isAnimatingNext = false
+        }
+
     }
 }
