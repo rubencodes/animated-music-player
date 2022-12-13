@@ -37,7 +37,7 @@ struct BasicView: View {
                 HStack(spacing: 8) {
                     PlaybackControls()
 
-                    TrackProgress(track: track, location: location)
+                    ProgressView(track: track, location: location)
                 }
             }
         }
@@ -64,8 +64,8 @@ struct BasicView: View {
     }
 
     @ViewBuilder
-    private func TrackProgress(track: Track,
-                               location: CGFloat) -> some View {
+    private func ProgressView(track: Track,
+                              location: CGFloat) -> some View {
         HStack {
             Text(location.formatAsTimestamp())
                 .monospacedDigit()

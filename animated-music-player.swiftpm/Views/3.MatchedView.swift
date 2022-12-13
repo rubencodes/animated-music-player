@@ -66,7 +66,7 @@ struct MatchedView: View {
                 if isExpanded {
                     TitleExpanded(track: track)
 
-                    TrackProgress(track: track, location: location)
+                    ProgressView(track: track, location: location)
 
                     HStack(spacing: 50) {
                         Spacer(minLength: 0)
@@ -81,7 +81,7 @@ struct MatchedView: View {
                     HStack(spacing: 8) {
                         PlaybackControls()
 
-                        TrackProgress(track: track, location: location)
+                        ProgressView(track: track, location: location)
                     }
                 }
             }
@@ -135,8 +135,8 @@ struct MatchedView: View {
     }
 
     @ViewBuilder
-    private func TrackProgress(track: Track,
-                               location: CGFloat) -> some View {
+    private func ProgressView(track: Track,
+                              location: CGFloat) -> some View {
         VStack {
             HStack {
                 if isExpanded == false {
