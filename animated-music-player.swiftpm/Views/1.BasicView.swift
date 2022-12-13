@@ -21,14 +21,14 @@ struct BasicView: View {
 
             AlbumArt(track: viewModel.track)
             
-            Controls()
+            TrackInfo()
         }
     }
 
     // MARK: - View Builders
 
     @ViewBuilder
-    private func Controls() -> some View {
+    private func TrackInfo() -> some View {
         if let track = viewModel.track,
            let location = viewModel.location {
             VStack(spacing: 8) {

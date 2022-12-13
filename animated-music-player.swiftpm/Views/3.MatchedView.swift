@@ -52,14 +52,14 @@ struct MatchedView: View {
                 Spacer(minLength: 0)
             }
 
-            Controls()
+            TrackInfo()
         }
     }
 
     // MARK: - View Builders
 
     @ViewBuilder
-    private func Controls() -> some View {
+    private func TrackInfo() -> some View {
         if let track = viewModel.track,
            let location = viewModel.location {
             VStack(alignment: .leading, spacing: isExpanded ? 30 : 8) {

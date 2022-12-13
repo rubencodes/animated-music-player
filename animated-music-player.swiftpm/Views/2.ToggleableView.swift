@@ -24,24 +24,24 @@ struct ToggleableView: View {
             Spacer(minLength: 0)
 
             AlbumArt(track: viewModel.track)
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        isExpanded.toggle()
+                    }
+                }
 
             if isExpanded {
                 Spacer(minLength: 0)
             }
 
-            Controls()
-        }
-        .onTapGesture {
-            withAnimation(.spring()) {
-                isExpanded.toggle()
-            }
+            TrackInfo()
         }
     }
 
     // MARK: - View Builders
 
     @ViewBuilder
-    private func Controls() -> some View {
+    private func TrackInfo() -> some View {
         if let track = viewModel.track,
            let location = viewModel.location {
             VStack(spacing: isExpanded ? 30 : 8) {
