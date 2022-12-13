@@ -46,7 +46,7 @@ struct ToggleableView: View {
            let location = viewModel.location {
             VStack(alignment: .leading, spacing: isExpanded ? 30 : 8) {
                 if isExpanded {
-                    TitleExpanded(track: track)
+                    TitleVertical(track: track)
 
                     ProgressView(track: track, location: location)
 
@@ -58,7 +58,7 @@ struct ToggleableView: View {
                         Spacer(minLength: 0)
                     }
                 } else {
-                    Title(track: track)
+                    TitleHorizontal(track: track)
 
                     HStack(spacing: 8) {
                         PlaybackControls()
@@ -71,7 +71,7 @@ struct ToggleableView: View {
     }
 
     @ViewBuilder
-    private func TitleExpanded(track: Track) -> some View {
+    private func TitleVertical(track: Track) -> some View {
         VStack(alignment: .leading) {
             Text(track.name)
                 .foregroundColor(.primary)
@@ -89,7 +89,7 @@ struct ToggleableView: View {
     }
 
     @ViewBuilder
-    private func Title(track: Track) -> some View {
+    private func TitleHorizontal(track: Track) -> some View {
         HStack(spacing: 4) {
             Spacer(minLength: 0)
 

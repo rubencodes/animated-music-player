@@ -32,7 +32,7 @@ struct BasicView: View {
         if let track = viewModel.track,
            let location = viewModel.location {
             VStack(spacing: 8) {
-                Title(track: track)
+                TitleHorizontal(track: track)
 
                 HStack(spacing: 8) {
                     PlaybackControls()
@@ -44,7 +44,7 @@ struct BasicView: View {
     }
 
     @ViewBuilder
-    private func Title(track: Track) -> some View {
+    private func TitleHorizontal(track: Track) -> some View {
         HStack(spacing: 4) {
             Spacer(minLength: 0)
 
