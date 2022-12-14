@@ -24,6 +24,11 @@ struct ToggleableView: View {
             Spacer(minLength: 0)
 
             AlbumArt(track: viewModel.track)
+                .shadow(radius: isExpanded ? 10 : 0)
+                .opacity(isExpanded ? 1 : 0.5)
+                .rotation3DEffect(isExpanded ? .degrees(180) : .zero,
+                                  axis: (x: 0, y: 1, z: 0))
+                .scaleEffect(isExpanded ? 1.1 : 0.9)
                 .onTapGesture {
                     withAnimation(.spring()) {
                         isExpanded.toggle()
